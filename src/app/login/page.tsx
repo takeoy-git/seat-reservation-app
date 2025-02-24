@@ -1,15 +1,22 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation"; // ✅ 追加
 import { supabase } from "@/lib/supabaseClient";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter(); // ✅ ルーターを取得
 
   const handleLogin = async () => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) alert(error.message);
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    router.push("/reserve"); // ✅ ログイン成功後に /reserve に遷移
   };
 
   return (

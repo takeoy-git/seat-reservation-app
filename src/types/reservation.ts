@@ -1,13 +1,7 @@
 export type Seat = {
-    id: number;
-    number: string; // 座席番号
-    isReserved: boolean;
+    seat_number: number;
+    reservation_code: string | null;
+    visitor_name: string | null;
+    time_slot: string;
   };
-  
-  export interface Reservation {
-    id: string;
-    userId: string;
-    seatId: number;
-    time: string; // 予約時間（例: "14:00"）
-  }
   
