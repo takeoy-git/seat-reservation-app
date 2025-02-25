@@ -2,16 +2,10 @@
 
 import { supabase } from "@/lib/supabaseClient";
 import { useEffect, useState } from "react";
-import { Seat } from "@/types/reservation";
-
-
-const timeSlots = [
-  "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", 
-  "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30"
-];
+import { timeSlots } from "@/lib/timeSlots";
+import { useFetchSeats } from "@/components/useFetchSeats";
 
 export default function ReservationPage() {
-  const [seats, setSeats] = useState<Seat[]>([]);
   const [selectedReservation, setSelectedReservation] = useState<{ seatNumber: number; timeSlot: string; reservationCode: string | null; visitorName: string | null } | null>(null); // 修正された型
   const [visitorName, setVisitorName] = useState<string>("");
   const [completedReservation, setCompletedReservation] = useState<{ reservationCode: string; ticketNumber: number } | null>(null);
@@ -19,35 +13,15 @@ export default function ReservationPage() {
   const [isCancelMode, setIsCancelMode] = useState<boolean>(false); // キャンセルモード
   const [isCancelSuccessModalVisible, setIsCancelSuccessModalVisible] = useState<boolean>(false); // キャンセル成功モーダル表示
   const [todayDate, setTodayDate] = useState("");
+  
+  const {seats, setSeats} = useFetchSeats(todayDate);
 
-  // 今日の日付を "YYYY年MM月DD日" の形式で表示
+  // 今日の日付を YYYY-MM-DD 形式で取得
   useEffect(() => {
-    setTodayDate(new Date().toLocaleDateString("ja-JP",{
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    }));
+    const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+    setTodayDate(today);
   }, []);
  
-
-  useEffect(() => {
-    const fetchSeats = async () => {
-      const { data , error } = await supabase
-        .from("reservations")
-        .select("seat_number, reservation_code, visitor_name, time_slot");
-  
-      if (error) {
-        console.error("エラー詳細:", error);
-        return;
-      }
-  
-      // 明示的に型を指定する
-      setSeats(data as Seat[]);  // data の型を Seat[] として指定
-    };
-  
-    fetchSeats();
-  }, []);
-
   const getTicketNumber = (timeSlot: string, seatNumber: number) => {
     const timeIndex = timeSlots.indexOf(timeSlot);
     return timeIndex * 2 + seatNumber;
