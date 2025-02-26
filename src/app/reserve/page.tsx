@@ -4,6 +4,8 @@ import { supabase } from "@/lib/supabaseClient";
 import { useEffect, useState } from "react";
 import { timeSlots } from "@/lib/timeSlots";
 import { useFetchSeats } from "@/components/useFetchSeats";
+import CancelReservationButton from "@/components/CancelReservationButton";
+
 
 export default function ReservationPage() {
   const [selectedReservation, setSelectedReservation] = useState<{ seatNumber: number; timeSlot: string; reservationCode: string | null; visitorName: string | null } | null>(null); // 修正された型
@@ -75,6 +77,7 @@ export default function ReservationPage() {
       .limit(1);
 
     if (error) {
+      console.error("予約情報の取得に失敗しました:", error);
       alert("予約情報の取得に失敗しました");
       return;
     }
@@ -103,80 +106,26 @@ export default function ReservationPage() {
       created_at: new Date(),
     });
 
-    if (!insertError) {
-      setCompletedReservation({ reservationCode, ticketNumber });
-      setSelectedReservation(null);
-      setVisitorName("");
-      setSeats((prevSeats) => [
-        ...prevSeats,
-        { seat_number: seatNumber, reservation_code: reservationCode, visitor_name: visitorName, time_slot: timeSlot },
-      ]);
-      setIsNameInputVisible(false); // 名前入力フォームを非表示
-    } else {
+    if (insertError) {
+      console.error("予約の保存に失敗しました:", insertError);
       alert("予約に失敗しました");
-    }
-  };
-
-  // 予約キャンセルボタンがクリックされた時の処理
-  const handleCancelReservation = async () => {
-    if (visitorName.trim().length < 1) {
-      alert("名前を入力してください");
       return;
     }
 
-    if (selectedReservation) {
-      const { seatNumber, timeSlot, reservationCode } = selectedReservation;
-      const today = new Date().toISOString().split("T")[0].replace(/-/g, "");
+    setCompletedReservation({ reservationCode, ticketNumber });
+    setSelectedReservation(null);
+    setVisitorName("");
 
-      console.log("🔍 削除リクエスト:", {
-        reservationCode,
-        visitorName,
-        seatNumber,
-        timeSlot,
-        today,
-      });
-
-      // visitor_name が一致する場合にのみ予約をキャンセル
-      const reservedSeat = seats.find(
-        (seat) => seat.seat_number === seatNumber && seat.time_slot === timeSlot
-      );
-
-      const {data } = await supabase
-      .from("reservations")
-      .delete()
-      .eq("reservation_code", reservationCode)
-      .eq("visitor_name", visitorName)
-      .eq("seat_number", seatNumber)
-      .eq("time_slot", timeSlot)
-      .eq("date", today)
-      .select("*"); // これを追加
-
-
-      if (reservedSeat?.visitor_name === visitorName) {
-        const { error } = await supabase
-          .from("reservations")
-          .delete()
-          .eq("reservation_code", reservationCode)
-          .eq("visitor_name", visitorName) // 名前が一致する場合のみ
-          .eq("seat_number", seatNumber)
-          .eq("time_slot", timeSlot)
-          .eq("date", today);
-
-        if (error) {
-          console.error("❌ 削除エラー:", error);
-          alert("キャンセルに失敗しました");
-        } else {
-          console.log("✅ 削除成功:", data);
-          // キャンセルが成功した場合、座席の状態を未予約に変更
-          setSeats(seats.filter((seat) => seat.reservation_code !== reservationCode));
-          setIsCancelSuccessModalVisible(true); // キャンセル成功モーダルを表示
-          setIsCancelMode(false); // キャンセルモードを無効化
-        }
-      } else {
-        alert("名前が一致しません。キャンセルできません。");
+    setSeats((prevSeats) => {
+      if (!prevSeats.find((s) => s.seat_number === seatNumber && s.time_slot === timeSlot)) {
+        return [...prevSeats, { seat_number: seatNumber, reservation_code: reservationCode, visitor_name: visitorName, time_slot: timeSlot }];
       }
-    }
+      return prevSeats;
+    });
+
+    setIsNameInputVisible(false);
   };
+
 
   // 戻るボタンの処理
   const handleBack = () => {
@@ -264,7 +213,7 @@ export default function ReservationPage() {
       {/* 名前入力モーダル */}
       {isNameInputVisible && !isCancelMode && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-4 rounded">
+          <div className="w-[50%] bg-white p-6 rounded shadow-lg text-center">
             <h2 className="text-lg font-bold mb-2">名前を入力してください</h2>
             <input
               type="text"
@@ -295,7 +244,7 @@ export default function ReservationPage() {
       {/* キャンセルモード */}
       {isCancelMode && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded w-[50%]"> {/* モーダルの横幅を50%に設定 */}
+          <div className="w-[40%] bg-white p-6 rounded shadow-lg text-center"> {/* モーダルの横幅を50%に設定 */}
             <h2 className="text-lg font-bold mb-2">予約をキャンセルしますか？<br />予約時の名前を入力してください</h2>
             <input
               type="text"
@@ -305,15 +254,21 @@ export default function ReservationPage() {
               onChange={(e) => setVisitorName(e.target.value)}
             />
             <div className="flex justify-between mt-4">
+            {selectedReservation && (
+              <CancelReservationButton
+  visitorName={visitorName}
+  seatNumber={selectedReservation.seatNumber} 
+  timeSlot={selectedReservation.timeSlot}
+  todayDate={todayDate}
+  seats={seats}
+  setSeats={setSeats}
+  setIsCancelSuccessModalVisible={setIsCancelSuccessModalVisible} // 関数として渡す
+  setIsCancelMode={setIsCancelMode}
+/>
+            )}
+                
               <button
-                className="bg-red-500 text-white p-2 rounded w-full"
-                onClick={handleCancelReservation}
-                disabled={visitorName.trim().length < 1} // 名前が未入力なら無効化
-              >
-                予約キャンセル
-              </button>
-              <button
-                className="bg-gray-400 text-white p-2 rounded w-full ml-2"
+                className="bg-gray-400 text-white px-2 py-4 rounded w-full mt-2 mx-3"
                 onClick={handleBack}
               >
                 戻る
