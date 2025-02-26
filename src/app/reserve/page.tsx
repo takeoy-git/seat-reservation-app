@@ -20,7 +20,8 @@ export default function SeatReservation() {
 
   // 今日の日付を YYYY-MM-DD 形式で取得
   useEffect(() => {
-    const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+    const today = new Date().toLocaleDateString("ja-JP").split("T")[0]; // YYYY-MM-DD
+    console.log("Today's Date:", today);
     setTodayDate(today);
   }, []);
  
@@ -66,7 +67,7 @@ export default function SeatReservation() {
     }
 
     const { seatNumber, timeSlot } = selectedReservation;
-    const today = new Date().toISOString().split("T")[0].replace(/-/g, "");
+    const today = new Date().toLocaleDateString("ja-JP").split("T")[0].replace(/-/g, "");
 
     const { data: existingReservations, error } = await supabase
       .from("reservations")

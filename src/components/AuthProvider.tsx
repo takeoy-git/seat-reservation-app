@@ -19,19 +19,27 @@ export function AuthProvider({ children, requireAuth = false }: { children: Reac
   const router = useRouter();
 
   useEffect(() => {
-    const getSession = async () => {
+    const initializeAuth = async () => {
       setLoading(true);
-      
       try {
+        // まずセッション情報を取得
         const { data, error } = await supabase.auth.getSession();
-        
         if (error) {
           console.error("セッション取得エラー:", error.message);
           return;
         }
-
         console.log("Session Data:", data);
         setUser(data.session?.user ?? null);
+
+        // 認証状態の変更を監視
+        const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+          console.log("認証状態が変化:", session);
+          setUser(session?.user ?? null);
+        });
+
+        return () => {
+          authListener.subscription.unsubscribe();
+        };
       } catch (error) {
         console.error("セッション取得中にエラー:", error);
       } finally {
@@ -39,18 +47,10 @@ export function AuthProvider({ children, requireAuth = false }: { children: Reac
       }
     };
 
-    getSession();
-
-    // 認証状態の変更を監視
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log("認証状態が変化:", session);
-      setUser(session?.user ?? null);
-    });
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
+    initializeAuth();
   }, []);
+
+  
 
   useEffect(() => {
     if (requireAuth && !loading && user === null) {

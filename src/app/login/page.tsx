@@ -16,10 +16,7 @@ export default function Login() {
       alert(error.message);
       return;
     }
-  
-    // セッション情報をローカルストレージに手動で保存
-    localStorage.setItem("supabase.auth.token", JSON.stringify(data));
-  
+    console.log("ログイン成功:", data);
     router.push("/reserve");
   };
 
@@ -31,15 +28,13 @@ export default function Login() {
       return;
     }
   
-    // ローカルストレージのセッション情報を削除
-    localStorage.removeItem("supabase.auth.token");
-  
     // 状態を更新
     router.refresh();
   
     // ログインページへリダイレクト
     router.push("/login");
   };
+
   const handleKeyDown = (e: { key: string; }) => {
     if (e.key === "Enter") {
       handleLogin();
@@ -48,21 +43,28 @@ export default function Login() {
 
 
 
-
-
   useEffect(() => {
     const refreshSession = async () => {
-      const { data, error } = await supabase.auth.refreshSession();
-      if (error) {
-        console.error("セッションのリフレッシュエラー:", error.message);
-      } else {
-        console.log("セッションリフレッシュ成功:", data);
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (!data.session) {
+          console.warn("セッションが見つからないため、リフレッシュは実行しません。");
+          return;
+        }
+
+        const { error: refreshError } = await supabase.auth.refreshSession();
+        if (refreshError) {
+          console.error("セッションのリフレッシュエラー:", refreshError.message);
+        } else {
+          console.log("セッションリフレッシュ成功:", data);
+        }
+      } catch (err) {
+        console.error("セッションリフレッシュ処理中にエラー:", err);
       }
     };
-  
+
     refreshSession();
   }, []);
-
 
 
 
