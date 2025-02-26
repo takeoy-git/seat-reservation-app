@@ -5,9 +5,9 @@ import { useEffect, useState } from "react";
 import { timeSlots } from "@/lib/timeSlots";
 import { useFetchSeats } from "@/components/useFetchSeats";
 import CancelReservationButton from "@/components/CancelReservationButton";
+import { AuthProvider } from "@/components/AuthProvider";
 
-
-export default function ReservationPage() {
+export default function SeatReservation() {
   const [selectedReservation, setSelectedReservation] = useState<{ seatNumber: number; timeSlot: string; reservationCode: string | null; visitorName: string | null } | null>(null); // 修正された型
   const [visitorName, setVisitorName] = useState<string>("");
   const [completedReservation, setCompletedReservation] = useState<{ reservationCode: string; ticketNumber: number } | null>(null);
@@ -134,11 +134,29 @@ export default function ReservationPage() {
     setIsCancelMode(false); // キャンセルモードを無効化
   };
 
+
+
+
+
+
   return (
-    <div className="p-4 max-w-lg mx-auto">
-      <h1 className="text-white text-center text-2xl font-bold mb-4">
-        特別席予約：{todayDate} {/* 本日の日付を表示 */}
-      </h1>
+    <AuthProvider requireAuth={true}>
+    <div className="p-3 w-full mx-auto">
+<div className="max-w-4xl mx-auto text-center p-5">
+  {/* サブタイトル */}
+  <h2 className="text-white text-xl font-light">
+    「AWE体験」に着目した、見るだけで美しくなれる映像  </h2>
+
+  {/* メインタイトル */}
+  <h1 className="text-white text-5xl font-bold mb-12">    Beauty Retreat Theater  </h1>
+
+
+  <div className="text-white text-xl font-bold py-3 w-full rounded-lg shadow-lg inline-block bg-black/50 mb-3">
+   本日の予約：{todayDate}  </div>
+  <p className="text-gray-100 text-lg leading-relaxed">
+特別席での鑑賞を希望される方は、座席/時間帯を押して予約をしてください。<br/>
+  </p>
+</div>
 
       {/* 予約完了ウィンドウ */}
       {completedReservation && (
@@ -172,12 +190,17 @@ export default function ReservationPage() {
         </div>
       )}
 
-      {/* 時刻と座席を並べるテーブルレイアウト */}
-      <div className="grid grid-cols-3 gap-4">
+{/* 時刻と座席を並べるテーブルレイアウト */}
+<div className="grid grid-cols-[0.3fr_1fr_1fr] gap-2 pb-1 px-5 items-center">
+  <div className="text-white font-bold text-xl text-center w-[100px]">時刻</div>
+  <div className="text-white font-bold text-xl text-center">階段側席</div>
+  <div className="text-white font-bold text-xl text-center">受付側席</div>
+</div>
+      <div className="grid grid-cols-[0.3fr_1fr_1fr] gap-2 px-5 items-center">
         {/* 1列目：時刻 */}
         <div className="flex flex-col gap-3">
           {timeSlots.map((timeSlot) => (
-            <div key={timeSlot} className="p-2 rounded h-[50px] w-[250px] text-white font-bold text-center text-xl">{timeSlot}</div>
+            <div key={timeSlot} className="py-2 rounded h-[50px] w-[100px] text-white  font-bold text-center text-xl">{timeSlot}</div>
           ))}
         </div>
 
@@ -186,10 +209,10 @@ export default function ReservationPage() {
           {timeSlots.map((timeSlot) => (
             <div key={timeSlot} className="flex justify-center">
               <button
-                className={`p-2 rounded h-[50px] w-[300px] ${seats.some((s) => s.seat_number === 1 && s.time_slot === timeSlot) ? "bg-gray-500 text-white" : "bg-white border"} `} // 横幅を1.2倍に設定, 高さを80%に設定
+                className={`p-2 rounded h-[50px] w-[320px] flex items-center justify-center ${seats.some((s) => s.seat_number === 1 && s.time_slot === timeSlot) ? "bg-gray-700 text-white" : "bg-white/80 border"} `} // 横幅を1.2倍に設定, 高さを80%に設定
                 onClick={() => handleSelectSeat(1, timeSlot, `${timeSlot}-1`)} // reservationCodeを渡す
               >
-                {seats.some((s) => s.seat_number === 1 && s.time_slot === timeSlot) ? `予約済: ${seats.find((s) => s.seat_number === 1 && s.time_slot === timeSlot)?.visitor_name}` : `席 1：${timeSlot}`}
+                {seats.some((s) => s.seat_number === 1 && s.time_slot === timeSlot) ? `予約済: ${seats.find((s) => s.seat_number === 1 && s.time_slot === timeSlot)?.visitor_name}` : `${timeSlot}　[無料]`}
               </button>
             </div>
           ))}
@@ -200,10 +223,10 @@ export default function ReservationPage() {
           {timeSlots.map((timeSlot) => (
             <div key={timeSlot} className="flex justify-center">
               <button
-                className={`p-2 rounded h-[50px] w-[300px] ${seats.some((s) => s.seat_number === 2 && s.time_slot === timeSlot) ? "bg-gray-500 text-white" : "bg-white border"} `} // 横幅を1.2倍に設定, 高さを80%に設定
+                className={`p-2 rounded h-[50px] w-[320px] ${seats.some((s) => s.seat_number === 2 && s.time_slot === timeSlot) ? "bg-gray-700 text-white" : "bg-white/80 border"} `} // 横幅を1.2倍に設定, 高さを80%に設定
                 onClick={() => handleSelectSeat(2, timeSlot, `${timeSlot}-2`)} // reservationCodeを渡す
               >
-                {seats.some((s) => s.seat_number === 2 && s.time_slot === timeSlot) ? `予約済: ${seats.find((s) => s.seat_number === 2 && s.time_slot === timeSlot)?.visitor_name}` : `席 2：${timeSlot}`}
+                {seats.some((s) => s.seat_number === 2 && s.time_slot === timeSlot) ? `予約済: ${seats.find((s) => s.seat_number === 2 && s.time_slot === timeSlot)?.visitor_name}` : `${timeSlot}　[無料]`}
               </button>
             </div>
           ))}
@@ -278,5 +301,6 @@ export default function ReservationPage() {
         </div>
       )}
     </div>
+    </AuthProvider>
   );
 }

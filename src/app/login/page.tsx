@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 
@@ -10,28 +10,62 @@ export default function Login() {
   const router = useRouter();
 
   const handleLogin = async () => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  
     if (error) {
       alert(error.message);
       return;
     }
+  
+    // セッション情報をローカルストレージに手動で保存
+    localStorage.setItem("supabase.auth.token", JSON.stringify(data));
+  
     router.push("/reserve");
   };
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
+    
     if (error) {
       alert(error.message);
       return;
     }
+  
+    // ローカルストレージのセッション情報を削除
+    localStorage.removeItem("supabase.auth.token");
+  
+    // 状態を更新
+    router.refresh();
+  
+    // ログインページへリダイレクト
     router.push("/login");
   };
-
   const handleKeyDown = (e: { key: string; }) => {
     if (e.key === "Enter") {
       handleLogin();
     }
   };
+
+
+
+
+
+  useEffect(() => {
+    const refreshSession = async () => {
+      const { data, error } = await supabase.auth.refreshSession();
+      if (error) {
+        console.error("セッションのリフレッシュエラー:", error.message);
+      } else {
+        console.log("セッションリフレッシュ成功:", data);
+      }
+    };
+  
+    refreshSession();
+  }, []);
+
+
+
+
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6">
@@ -42,6 +76,7 @@ export default function Login() {
         placeholder="メールアドレス"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
+        onKeyDown={handleKeyDown}
         className="border p-3 w-full rounded-md shadow-sm mb-3 focus:ring-2 focus:ring-indigo-400 outline-none"
       />
       <input

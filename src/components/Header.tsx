@@ -1,39 +1,33 @@
 "use client";
 
-import { useRouter, usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function Header() {
   const router = useRouter();
-  const pathname = usePathname(); // ✅ usePathname() を使用して、Next.js のルーターから確実に取得
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [pendingDestination, setPendingDestination] = useState<string | null>(null);
 
-  useEffect(() => {
-    console.log("Current Path Updated:", pathname);
-  }, [pathname]);
-
+  // すべてのページ遷移でパスワード認証を要求
   const handleNavigation = (destination: string) => {
-    console.log("Navigating from:", pathname, "to:", destination);
-
-    if ((pathname === "/reserve" || pathname === "/maintenance") && destination === "/") {
-      setPassword(""); // 初期化
-      setError(""); // エラーメッセージをリセット
-      setIsPasswordModalOpen(true);
-      console.log("Password modal should open");
-    } else {
-      router.push(destination);
-      console.log("Navigating without password");
-    }
+    setPassword(""); // 初期化
+    setError(""); // エラーメッセージをリセット
+    setPendingDestination(destination); // 遷移先を保存
+    setIsPasswordModalOpen(true); // モーダルを開く
   };
 
+  // パスワード認証
   const handlePasswordSubmit = () => {
     if (password === "1234") {
       setIsPasswordModalOpen(false);
-      router.push("/");
+      if (pendingDestination) {
+        router.push(pendingDestination); // 認証成功後に保存した遷移先へ移動
+      }
     } else {
       setError("パスコードが間違っています");
+      setPassword(""); // ❗エラーが出たら入力値を空にする
     }
   };
 
@@ -46,17 +40,31 @@ export default function Header() {
   return (
     <>
       <header
-        className="fixed top-0 w-full bg-cover bg-center z-50"
+        className="fixed top-0 w-full h-[60px] bg-cover bg-center z-50"
         style={{ backgroundImage: "url('/backpattern.png')" }}
       >
         <div className="flex justify-between items-center bg-opacity-70 bg-black p-1">
-          <h1 className="text-gray-500 text-s">Seat Reserve App</h1>
-          <button
-            className="text-gray-600 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-100 transition-colors ml-2"
-            onClick={() => handleNavigation("/")}
-          >
-            Top
-          </button>
+        <div className="flex w-full">
+  <button
+    className="w-1/3 text-gray-700 text-sm px-2 py-1 border-none bg-transparent opacity-20 hover:opacity-100 transition-opacity"
+    onClick={() => handleNavigation("/")}
+  >
+    Top
+  </button>
+  <button
+    className="w-1/3 text-gray-700 text-sm px-2 py-1 border-none bg-transparent opacity-20 hover:opacity-100 transition-opacity"
+    onClick={() => handleNavigation("/reserve")}
+  >
+    Reserve
+  </button>
+  <button
+    className="w-1/3 text-gray-700 text-sm px-2 py-1 border-none bg-transparent opacity-20 hover:opacity-100 transition-opacity"
+    onClick={() => handleNavigation("/maintenance")}
+  >
+    Maintenance
+  </button>
+</div>
+
         </div>
       </header>
 
