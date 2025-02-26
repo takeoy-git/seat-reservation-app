@@ -19,7 +19,7 @@ body {
   background: var(--background);
   background-image: url('/backpattern.png'); 
   background-repeat: repeat; /* 繰り返し */
-  background-size: 217%; /* 画像のサイズを自動に */
+  background-size: cover; /* 画像のサイズを自動に */
   background-position: center; /* 繰り返しの基準位置 */
   font-family: Arial, Helvetica, sans-serif;
 }
