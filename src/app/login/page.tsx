@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation"; // ✅ 追加
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const router = useRouter(); // ✅ ルーターを取得
+  const router = useRouter();
 
   const handleLogin = async () => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -15,30 +15,52 @@ export default function Login() {
       alert(error.message);
       return;
     }
+    router.push("/reserve");
+  };
 
-    router.push("/reserve"); // ✅ ログイン成功後に /reserve に遷移
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      alert(error.message);
+      return;
+    }
+    router.push("/login");
+  };
+
+  const handleKeyDown = (e: { key: string; }) => {
+    if (e.key === "Enter") {
+      handleLogin();
+    }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <h1 className="text-2xl font-bold">ログイン</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen p-6">
+     <div className="bg-white p-8 rounded-xl shadow-lg w-80 text-center">
+      <h1 className="text-2xl font-bold text-gray-800 mb-6">ログイン</h1>
       <input
         type="email"
         placeholder="メールアドレス"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="border p-2 m-2"
+        className="border p-3 w-full rounded-md shadow-sm mb-3 focus:ring-2 focus:ring-indigo-400 outline-none"
       />
       <input
         type="password"
         placeholder="パスワード"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="border p-2 m-2"
+        onKeyDown={handleKeyDown}
+        className="border p-3 w-full rounded-md shadow-sm mb-4 focus:ring-2 focus:ring-indigo-400 outline-none"
       />
-      <button onClick={handleLogin} className="bg-blue-500 text-white px-4 py-2 rounded">
-        ログイン
-      </button>
+      <div className="flex flex-col space-y-3">
+        <button onClick={handleLogin} className="bg-rose-500 text-white px-6 py-3 rounded-md shadow-md hover:bg-rose-600 transition">
+          ログイン
+        </button>
+        <button onClick={handleLogout} className="bg-gray-500 text-white px-6 py-3 rounded-md shadow-md hover:bg-gray-600 transition">
+          ログアウト
+        </button>
+      </div>
+      </div>
     </div>
   );
 }
