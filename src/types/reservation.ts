@@ -3,7 +3,6 @@ export type Seat = {
   reservation_code: string | null;
   visitor_name: string | null;
   time_slot: string;
-  seats?: Seat[]; 
 };
 
 export interface CancelReservationButtonProps {
