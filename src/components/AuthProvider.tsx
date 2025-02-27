@@ -15,14 +15,13 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children, requireAuth = false }: { children: React.ReactNode; requireAuth?: boolean }) {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true); // 認証状態を取得中かどうか
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     const initializeAuth = async () => {
       setLoading(true);
       try {
-        // まずセッション情報を取得
         const { data, error } = await supabase.auth.getSession();
         if (error) {
           console.error("セッション取得エラー:", error.message);
@@ -30,16 +29,6 @@ export function AuthProvider({ children, requireAuth = false }: { children: Reac
         }
         console.log("Session Data:", data);
         setUser(data.session?.user ?? null);
-
-        // 認証状態の変更を監視
-        const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-          console.log("認証状態が変化:", session);
-          setUser(session?.user ?? null);
-        });
-
-        return () => {
-          authListener.subscription.unsubscribe();
-        };
       } catch (error) {
         console.error("セッション取得中にエラー:", error);
       } finally {
@@ -48,20 +37,28 @@ export function AuthProvider({ children, requireAuth = false }: { children: Reac
     };
 
     initializeAuth();
+
+    // 認証状態の変更を監視
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log("認証状態が変化:", session);
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, []);
 
-  
-
+  // 🚀 ユーザーがログアウトされたら、自動で /login にリダイレクト
   useEffect(() => {
     if (requireAuth && !loading && user === null) {
-      router.push("/login"); // 未ログインならログインページへリダイレクト
+      router.push("/login");
     }
   }, [requireAuth, user, loading, router]);
 
   const signOut = async () => {
     await supabase.auth.signOut();
-    setUser(null);
-    router.push("/login"); // ログアウト後はログインページへ
+    setUser(null); // 🚀 ユーザー状態を即座に null に変更
   };
 
   if (loading) {

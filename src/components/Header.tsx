@@ -47,9 +47,9 @@ export default function Header() {
         <div className="flex w-full">
   <button
     className="w-1/3 text-gray-700 text-sm px-2 py-1 border-none bg-transparent opacity-20 hover:opacity-100 transition-opacity"
-    onClick={() => handleNavigation("/")}
+    onClick={() => handleNavigation("/admin")}
   >
-    Top
+    Admin
   </button>
   <button
     className="w-1/3 text-gray-700 text-sm px-2 py-1 border-none bg-transparent opacity-20 hover:opacity-100 transition-opacity"

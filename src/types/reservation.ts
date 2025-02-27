@@ -15,3 +15,12 @@ export interface CancelReservationButtonProps {
   setIsCancelSuccessModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
   setIsCancelMode: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
+export type Reservation = {
+  id: number;
+  visitor_name: string;
+  time_slot: string;
+  date: string;
+  seat_number: number;
+  created_at: string;
+};
