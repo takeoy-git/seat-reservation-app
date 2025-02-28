@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+■映像コンテンツ体験サービス予約アプリ
 
-## Getting Started
+■本アプリ使用イメージ
+１．お客さま来店
+２．映像鑑賞希望者は設置型サイネージをタッチし時間予約（本アプリ使用）
+３．希望時間になったら着席
 
-First, run the development server:
+■アプリ操作の流れ
+使用機器：縦型タッチパネル式サイネージ
+１．スタッフが営業時間前にログイン、Chrome Kioskモード
+２．予約ページを表示
+３．以降、お客様が予約ページをタッチ操作
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+■予約の流れ
+１．当日予約可能な座席枠がボタン表示されている
+３．予約したい座席枠をタップ
+４．内容に同意する場合は、氏名を入力し予約（氏名なしだと予約ボタンが押せない）
+５．予約後に都合が悪くなった場合は予約済みボタンをもう一度押すとキャンセル可能。イタズラ防止のためパスワード(予約者名入力)要。
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+■使用ライブラリ
+Next.js AppRouter, TypeScript, Tailwind.css, Supabase
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+■工夫した点
+運用上の工夫
+ーイタズラ防止のため、画面遷移には簡易パスワードが必要とした。
+ーお客さまは、予約ページのみ操作でき画面遷移やログアウトができない
+ーページ遷移ボタンはHeaderコンポーネントの背景色と同化させ、スタッフ以外は押せることに気づかない。万が一押してもパスワードが必要
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+ーパスワード入力後、Enter(onKeyDown)でログインできるようにUI改善
+ー管理者ページではデータリストの編集、削除、昇順/降順ソートができる
+ー利用者数グラフ(Chartsライブラリ)は3種類(日付別、曜日別、座席別)示し、カルーセル(shadcn/ui)で表示
+ー業務で使いやすいようにエクセル(XLSXライブラリ)出力可能にした
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+ー映像サービス機器が故障した場合に備えて、「メンテナンス中です」ページを作成
+ーメンテナンスページはログイン認証不要（<Auth isLogin={false}>）とし、ログアウト状態でも閲覧可能
