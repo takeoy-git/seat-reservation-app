@@ -18,7 +18,7 @@
 ５．予約後に都合が悪くなった場合は予約済みボタンをもう一度押すとキャンセル可能。イタズラ防止のためパスワード(予約者名入力)要。
 
 ■使用ライブラリ
-Next.js AppRouter, TypeScript, Tailwind.css, Supabase
+Next.js AppRouter, TypeScript, Tailwind.css, Supabase, shadcn/ui
 
 ■工夫した点
 運用上の工夫
@@ -33,3 +33,9 @@ Next.js AppRouter, TypeScript, Tailwind.css, Supabase
 
 ー映像サービス機器が故障した場合に備えて、「メンテナンス中です」ページを作成
 ーメンテナンスページはログイン認証不要（<Auth isLogin={false}>）とし、ログアウト状態でも閲覧可能
+
+■追加予定
+ーキャッチコピーをタップすると、映像詳細解説を記載したモーダルウィンドウが開く
+ー現在時刻と比較して過ぎてしまった予約時間枠は予約できないようにグレーアウトする
+ー席予約後にQRコード画像を表示し、アクセスすると、予約した時間・座席番号、同意した注意事項がわかる
+ー上記QRコード先は1日後に消滅
