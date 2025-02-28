@@ -41,7 +41,6 @@ export default function Header() {
     <>
       <header
         className="fixed top-0 w-full h-[60px] bg-cover bg-center z-50"
-        style={{ backgroundImage: "url('/backpattern.png')" }}
       >
         <div className="flex justify-between items-center bg-opacity-70 bg-black p-1">
         <div className="flex w-full">

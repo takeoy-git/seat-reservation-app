@@ -146,7 +146,17 @@ export default function SeatReservation() {
   return (
     <AuthProvider requireAuth={true}>
     <div className="p-3 w-full mx-auto">
+
+     {/* コンポーネント：タイトル、本日の予約、説明 */}
     <ReservePageHeaderSection todayDate={todayDate} />
+
+      {/* コンポーネント：時刻、座席ボタンリスト */}
+      <ReservationTable
+           seats={seats}
+           timeSlots={timeSlots}
+           handleSelectSeat={handleSelectSeat}
+         />
+
 
       {/* 予約完了ウィンドウ */}
       {completedReservation && (
@@ -179,18 +189,8 @@ export default function SeatReservation() {
           </div>
         </div>
       )}
-
-
-   {/* 予約テーブルのコンポーネント化 */}
-   <ReservationTable
-        seats={seats}
-        timeSlots={timeSlots}
-        handleSelectSeat={handleSelectSeat}
-      />
-
-
-{/* 名前入力モーダル */}
-{isNameInputVisible && !isCancelMode && (
+      {/* 名前入力モーダル */}
+      {isNameInputVisible && !isCancelMode && (
   <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
     <div className="w-[40%] bg-white p-8 rounded-lg shadow-xl text-center">
       
@@ -238,11 +238,10 @@ export default function SeatReservation() {
           戻る
         </button>
       </div>
+
     </div>
   </div>
 )}
-
-
 
       {/* キャンセルモード */}
       {isCancelMode && (
