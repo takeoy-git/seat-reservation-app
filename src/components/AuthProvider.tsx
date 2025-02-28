@@ -27,6 +27,7 @@ export function AuthProvider({ children, requireAuth = false }: { children: Reac
           console.error("セッション取得エラー:", error.message);
           return;
         }
+
         console.log("Session Data:", data);
         setUser(data.session?.user ?? null);
       } catch (error) {
@@ -45,11 +46,11 @@ export function AuthProvider({ children, requireAuth = false }: { children: Reac
     });
 
     return () => {
-      authListener.subscription.unsubscribe();
+      authListener?.subscription?.unsubscribe();
     };
   }, []);
 
-  // 🚀 ユーザーがログアウトされたら、自動で /login にリダイレクト
+  // 🚀 認証が必要なページで未認証なら /login へリダイレクト
   useEffect(() => {
     if (requireAuth && !loading && user === null) {
       router.push("/login");
@@ -57,8 +58,16 @@ export function AuthProvider({ children, requireAuth = false }: { children: Reac
   }, [requireAuth, user, loading, router]);
 
   const signOut = async () => {
-    await supabase.auth.signOut();
-    setUser(null); // 🚀 ユーザー状態を即座に null に変更
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("ログアウトエラー:", error.message);
+      return;
+    }
+
+    setUser(null); // ユーザー状態を即座にリセット
+    localStorage.clear(); // ローカルストレージをクリア
+    sessionStorage.clear(); // セッションストレージもクリア
+    router.push("/login"); // 🚀 ログインページにリダイレクト
   };
 
   if (loading) {
@@ -69,5 +78,9 @@ export function AuthProvider({ children, requireAuth = false }: { children: Reac
 }
 
 export function useAuth() {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
 }

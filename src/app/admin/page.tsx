@@ -20,15 +20,16 @@ const AdminPage = () => {
     handleChange,
   } = useReservations();
   
-  const auth = useAuth(); // ✅ useAuth() を変数に格納
+  const { signOut } = useAuth(); // ✅ useAuth を呼び出して signOut を取得
   const router = useRouter();
 
   const handleLogout = async () => {
-    if (auth?.signOut) { // ✅ auth が null でないかチェック
-      await auth.signOut();
-      router.push("/login");
-    }
+    await signOut(); // ログアウト処理
+    router.push("/login"); // ログインページにリダイレクト
   };
+
+
+
 
 return (
 <AuthProvider  requireAuth={true}>
