@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Reservation } from "@/types/reservation";
 import { supabase } from "@/lib/supabaseClient";
 
-
 export const useReservations = () => {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [sortKey, setSortKey] = useState<keyof Reservation>("date");
@@ -99,23 +98,34 @@ export const useReservations = () => {
     );
   };
 
+  const addNewReservation = async (newReservationData: Partial<Reservation>) => {
+    const newReservation: Partial<Reservation> = {
+      visitor_name: newReservationData.visitor_name || "",
+      date: newReservationData.date || new Date().toISOString().split("T")[0], // 本日の日付
+      time_slot: newReservationData.time_slot || "09:00", // 初期時間枠
+      seat_number: newReservationData.seat_number || 1, // 初期座席番号
+      created_at: new Date().toISOString(),
+      remark: newReservationData.remark || "", // 空の備考
+      day_of_week: new Date(newReservationData.date || new Date()).toLocaleDateString("ja-JP", { weekday: "long" }), // 曜日追加
+    };
 
+    const { data, error } = await supabase
+      .from("reservations")
+      .insert(newReservation)
+      .select();
 
-  const getWeekdayStats = () => {
-    const weekdayCount: { [key: string]: number } = {};
-    reservations.forEach((res) => {
-      const day = new Date(res.date).toLocaleDateString("ja-JP", {
-        weekday: "long",
-      });
-      weekdayCount[day] = (weekdayCount[day] || 0) + 1;
-    });
+    if (error) {
+      console.error("新規予約の保存に失敗しました:", error.message);
+      alert(`新規予約の保存に失敗しました: ${error.message}`);
+      return;
+    }
 
-    return Object.keys(weekdayCount).map((day) => ({
-      day,
-      count: weekdayCount[day],
-    }));
+    if (data && data.length > 0) {
+      setReservations((prev) => [...prev, ...data]);
+      setEditingId(null);
+      setEditedData({});
+    }
   };
-
 
   return {
     reservations,
@@ -128,6 +138,7 @@ export const useReservations = () => {
     handleSave,
     handleDelete,
     handleChange,
-    getWeekdayStats,
+    addNewReservation,
+    fetchReservations,
   };
 };
