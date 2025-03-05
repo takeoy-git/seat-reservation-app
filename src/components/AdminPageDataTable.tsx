@@ -110,11 +110,9 @@ const AdminPageDataTable: React.FC<AdminPageDataTableProps> = ({
   ];
 
   return (
-    <>
+    <div className="p-6 shadow-md rounded-lg w-full max-w-6xl mx-auto flex flex-col items-center">
       <div className="p-6 shadow-md rounded-lg w-full max-w-3xl mx-auto flex flex-col items-center">
-        <Button onClick={exportMultiSheetExcel} className="bg-blue-500 text-white px-4 py-2 rounded mb-4">
-          エクセル出力
-        </Button>
+
         <table className="w-full border-collapse border border-gray-400 text-xl">
           <thead>
             <tr className="bg-gray-100 border-b border-gray-400">
@@ -223,8 +221,16 @@ const AdminPageDataTable: React.FC<AdminPageDataTableProps> = ({
             <Dot key={index} size={60} className={`mx-1 ${currentSlide === index ? "text-rose-500" : "text-gray-400"}`} />
           ))}
         </div>
-      </div>
-    </>
+
+        <div className="flex justify-center mt-4">
+        <Button onClick={exportMultiSheetExcel} className=" bg-blue-500 text-white px-4 py-2 rounded mb-4">
+          エクセル出力
+        </Button>
+        </div>
+
+          </div>
+    </div>
+    
   );
 };
 

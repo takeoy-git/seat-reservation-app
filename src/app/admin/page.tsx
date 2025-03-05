@@ -80,21 +80,41 @@ const AdminPage = () => {
       alert("少なくとも1つの座席を選択してください。");
       return;
     }
-
+  
+    // 予約の重複チェック
+    const isDuplicate = reservations.some((reservation) =>
+      newReservationData.seat_number.some((seat) =>
+        reservation.date === newReservationData.date &&
+        reservation.time_slot === newReservationData.time_slot &&
+        reservation.seat_number === seat // seat_number が配列でなく単体の数値で保存されている前提
+      )
+    );
+  
+    if (isDuplicate) {
+      alert("この時間枠の座席は既に予約されています。");
+      return;
+    }
+  
+    // 予約を追加
     for (const seatNumber of newReservationData.seat_number) {
       await addNewReservation({ ...newReservationData, seat_number: seatNumber });
     }
-
-    await fetchReservations(); // Refresh reservations after adding
+  
+    await fetchReservations(); // 予約データを更新
     closeModal();
   };
+  
 
   return (
     <AuthProvider requireAuth={true}>
-      <div className="p-6">
-        <Button onClick={handleAddNewReservation} className="bg-green-500 text-white px-4 py-2 rounded mb-4">
+ <div className="flex flex-col items-center  h-screen">
+
+  
+        <h1 className="text-2xl font-bold mb-4 justify-center items-centeritems-center text-white">管理画面</h1>
+        <Button onClick={handleAddNewReservation} className="bg-green-500 text-white px-4 py-2 rounded mb-1">
           新規予約追加
         </Button>
+
         <AdminPageDataTable
           reservations={reservations}
           sortKey={sortKey}
