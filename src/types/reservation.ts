@@ -19,8 +19,10 @@ export interface CancelReservationButtonProps {
 export type Reservation = {
   id: number;
   visitor_name: string;
-  time_slot: string;
   date: string;
+  day_of_week?: string; // 追加
+  time_slot: string;
   seat_number: number;
   created_at: string;
+  remark?: string; // 追加
 };
