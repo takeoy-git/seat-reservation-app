@@ -68,6 +68,8 @@ const AdminPageDataTable: React.FC<AdminPageDataTableProps> = ({
 
   const [currentSlide, setCurrentSlide] = useState<number>(0);
 
+
+
   const timeSlotStats = () => {
     const timeCount: { [key: string]: number } = {};
     reservations.forEach((res) => {
@@ -109,8 +111,11 @@ const AdminPageDataTable: React.FC<AdminPageDataTableProps> = ({
     { title: "曜日別予約数", data: dayOfWeekData, dataKey: "day", fileName: "day_of_week.xlsx" }
   ];
 
+
+
+  
   return (
-    <div className="p-6 shadow-md rounded-lg w-full max-w-6xl mx-auto flex flex-col items-center">
+    <div className="p-6 shadow-md rounded-lg overflow-x-auto w-full w-full max-w-6xl mx-auto flex flex-col items-center">
       <div className="p-6 shadow-md rounded-lg w-full max-w-3xl mx-auto flex flex-col items-center">
 
         <table className="w-full border-collapse border border-gray-400 text-xl">
@@ -172,13 +177,13 @@ const AdminPageDataTable: React.FC<AdminPageDataTableProps> = ({
                         保存
                       </Button>
                     ) : (
-                      <Button onClick={() => handleEdit(res.id)} className="bg-blue-500 text-white px-3 py-1 rounded">
-                        編集
-                      </Button>
+<Button onClick={() => handleEdit(res.id)} className="bg-blue-500 text-white px-3 py-1 rounded">
+  編集
+</Button>
                     )}
-                    <Button onClick={() => handleDelete(res.id)} className="bg-red-500 text-white px-3 py-1 rounded">
-                      削除
-                    </Button>
+<Button onClick={() => handleDelete(res.id)} className="bg-red-500 text-white px-3 py-1 rounded">
+  削除
+</Button>
                   </div>
                 </td>
               </tr>

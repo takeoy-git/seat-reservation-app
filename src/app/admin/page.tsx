@@ -33,7 +33,17 @@ const AdminPage = () => {
   
   const { signOut } = useAuth();
   const router = useRouter();
+  
+  const handleEditClick = (id: number) => {
+    handleEdit(id); // 編集開始処理を呼び出し
+  };
 
+  const handleDeleteClick = (id: number) => {
+    if (confirm("本当に削除しますか？")) {
+      handleDelete(id); // 削除処理を呼び出し
+    }
+  };
+  
   const handleLogout = async () => {
     await signOut();
     router.push("/login");
@@ -120,12 +130,12 @@ const AdminPage = () => {
           sortKey={sortKey}
           sortOrder={sortOrder}
           handleSort={handleSort}
-          handleEdit={handleEdit}
           handleSave={handleSave}
-          handleDelete={handleDelete}
           handleChange={handleChange}
           editingId={editingId}
           editedData={editedData}
+          handleEdit={handleEditClick}  // 編集ボタン
+          handleDelete={handleDeleteClick}  // 削除ボタン
         />
         <Button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded mt-4">
           ログアウト

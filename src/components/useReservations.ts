@@ -77,11 +77,57 @@ export const useReservations = () => {
     }
   };
 
+  // 新しい予約を追加する関数
+  const addNewReservation = async (newReservationData: Partial<Reservation>) => {
+    if (!newReservationData.date || !newReservationData.time_slot || newReservationData.seat_number === undefined) {
+      alert("日付、時間枠、座席番号は必須です。");
+      return;
+    }
+  
+    // 予約がすでに存在するか確認
+    const { data: existingReservations, error: fetchError } = await supabase
+      .from("reservations")
+      .select("id") // 必要最小限のデータのみ取得
+      .eq("date", newReservationData.date)
+      .eq("time_slot", newReservationData.time_slot)
+      .eq("seat_number", newReservationData.seat_number);
+  
+    if (fetchError) {
+      console.error("予約の確認中にエラーが発生しました:", fetchError);
+      alert("予約の確認に失敗しました");
+      return;
+    }
+  
+    // 既存の予約がある場合は予約を防ぐ
+    if (existingReservations.length > 0) {
+      alert("この座席はすでに予約されています。他の座席を選んでください。");
+      return;
+    }
+  
+    // 予約データの挿入
+    const { data, error } = await supabase
+      .from("reservations")
+      .insert([newReservationData]);
+  
+    if (error) {
+      console.error("新規予約の保存に失敗しました:", error.message);
+      alert(`新規予約の保存に失敗しました: ${error.message}`);
+      return;
+    }
+  
+    if (data) {
+      setReservations((prev) => [...prev, ...data]);
+      alert("予約が完了しました！");
+    }
+  };
+  
+
+  // 予約データをソートする関数
   const handleSort = (key: keyof Reservation) => {
     const newOrder = sortKey === key && sortOrder === "asc" ? "desc" : "asc";
     setSortKey(key);
     setSortOrder(newOrder);
-    
+
     setReservations((prev) =>
       [...prev].sort((a, b) => {
         const aValue = a[key];
@@ -96,35 +142,6 @@ export const useReservations = () => {
         return 0;
       })
     );
-  };
-
-  const addNewReservation = async (newReservationData: Partial<Reservation>) => {
-    const newReservation: Partial<Reservation> = {
-      visitor_name: newReservationData.visitor_name || "",
-      date: newReservationData.date || new Date().toISOString().split("T")[0], // 本日の日付
-      time_slot: newReservationData.time_slot || "09:00", // 初期時間枠
-      seat_number: newReservationData.seat_number || 1, // 初期座席番号
-      created_at: new Date().toISOString(),
-      remark: newReservationData.remark || "", // 空の備考
-      day_of_week: new Date(newReservationData.date || new Date()).toLocaleDateString("ja-JP", { weekday: "long" }), // 曜日追加
-    };
-
-    const { data, error } = await supabase
-      .from("reservations")
-      .insert(newReservation)
-      .select();
-
-    if (error) {
-      console.error("新規予約の保存に失敗しました:", error.message);
-      alert(`新規予約の保存に失敗しました: ${error.message}`);
-      return;
-    }
-
-    if (data && data.length > 0) {
-      setReservations((prev) => [...prev, ...data]);
-      setEditingId(null);
-      setEditedData({});
-    }
   };
 
   return {
