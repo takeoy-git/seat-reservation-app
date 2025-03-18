@@ -18,7 +18,7 @@
 ５．予約後に都合が悪くなった場合は予約済みボタンをもう一度押すとキャンセル可能。イタズラ防止のためパスワード(予約者名入力)要。
 
 ■使用ライブラリ
-Next.js AppRouter, TypeScript, Tailwind.css, Supabase, shadcn/ui
+Next.js AppRouter, TypeScript, Tailwind.css, Supabase, shadcn/ui, Vercel
 
 ■工夫した点
 運用上の工夫
