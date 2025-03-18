@@ -28,10 +28,8 @@ export default function Login() {
       return;
     }
   
-    // 状態を更新
+
     router.refresh();
-  
-    // ログインページへリダイレクト
     router.push("/login");
   };
 

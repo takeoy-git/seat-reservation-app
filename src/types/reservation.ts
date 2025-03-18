@@ -20,9 +20,9 @@ export type Reservation = {
   id: number;
   visitor_name: string;
   date: string;
-  day_of_week?: string; // 追加
+  day_of_week?: string;
   time_slot: string;
   seat_number: number;
   created_at: string;
-  remark?: string; // 追加
+  remark?: string; 
 };

@@ -10,12 +10,10 @@ const ReservePageHeaderSection: React.FC<HeaderSectionProps> = ({ todayDate }) =
   return (
 
       <div className="max-w-4xl mx-auto text-center p-5">
-        {/* サブタイトル */}
         <h2 className="text-white text-xl font-light">
           「AWE体験」に着目した、見るだけで美しくなれる映像
         </h2>
 
-        {/* メインタイトル */}
         <h1 className="text-white text-5xl font-bold mb-12">
           Beauty Retreat Theater
         </h1>

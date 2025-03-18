@@ -10,24 +10,23 @@ export default function Header() {
   const [error, setError] = useState("");
   const [pendingDestination, setPendingDestination] = useState<string | null>(null);
 
-  // すべてのページ遷移でパスワード認証を要求
+  // すべてのページ遷移で簡易のパスワード認証を要求。イタズラ防止目的の認証のためフロントエンドからパスワードが見えるが目的と照らして問題なし
   const handleNavigation = (destination: string) => {
-    setPassword(""); // 初期化
-    setError(""); // エラーメッセージをリセット
-    setPendingDestination(destination); // 遷移先を保存
-    setIsPasswordModalOpen(true); // モーダルを開く
+    setPassword(""); 
+    setError(""); 
+    setPendingDestination(destination); 
+    setIsPasswordModalOpen(true); 
   };
 
-  // パスワード認証
   const handlePasswordSubmit = () => {
     if (password === "1234") {
       setIsPasswordModalOpen(false);
       if (pendingDestination) {
-        router.push(pendingDestination); // 認証成功後に保存した遷移先へ移動
+        router.push(pendingDestination); 
       }
     } else {
       setError("パスコードが間違っています");
-      setPassword(""); // ❗エラーが出たら入力値を空にする
+      setPassword(""); 
     }
   };
 

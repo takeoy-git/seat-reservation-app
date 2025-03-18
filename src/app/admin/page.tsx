@@ -35,12 +35,12 @@ const AdminPage = () => {
   const router = useRouter();
   
   const handleEditClick = (id: number) => {
-    handleEdit(id); // 編集開始処理を呼び出し
+    handleEdit(id); 
   };
 
   const handleDeleteClick = (id: number) => {
     if (confirm("本当に削除しますか？")) {
-      handleDelete(id); // 削除処理を呼び出し
+      handleDelete(id); 
     }
   };
   
@@ -96,7 +96,7 @@ const AdminPage = () => {
       newReservationData.seat_number.some((seat) =>
         reservation.date === newReservationData.date &&
         reservation.time_slot === newReservationData.time_slot &&
-        reservation.seat_number === seat // seat_number が配列でなく単体の数値で保存されている前提
+        reservation.seat_number === seat 
       )
     );
   
@@ -105,12 +105,11 @@ const AdminPage = () => {
       return;
     }
   
-    // 予約を追加
     for (const seatNumber of newReservationData.seat_number) {
       await addNewReservation({ ...newReservationData, seat_number: seatNumber });
     }
   
-    await fetchReservations(); // 予約データを更新
+    await fetchReservations(); 
     closeModal();
   };
   
@@ -134,8 +133,8 @@ const AdminPage = () => {
           handleChange={handleChange}
           editingId={editingId}
           editedData={editedData}
-          handleEdit={handleEditClick}  // 編集ボタン
-          handleDelete={handleDeleteClick}  // 削除ボタン
+          handleEdit={handleEditClick}  
+          handleDelete={handleDeleteClick} 
         />
         <Button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded mt-4">
           ログアウト
