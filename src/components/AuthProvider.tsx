@@ -39,7 +39,7 @@ export function AuthProvider({ children, requireAuth = false }: { children: Reac
 
     initializeAuth();
 
-    // 認証状態の変更を監視
+
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
       console.log("認証状態が変化:", session);
       setUser(session?.user ?? null);
@@ -50,7 +50,7 @@ export function AuthProvider({ children, requireAuth = false }: { children: Reac
     };
   }, []);
 
-  // 🚀 認証が必要なページで未認証なら /login へリダイレクト
+
   useEffect(() => {
     if (requireAuth && !loading && user === null) {
       router.push("/login");
@@ -64,10 +64,10 @@ export function AuthProvider({ children, requireAuth = false }: { children: Reac
       return;
     }
 
-    setUser(null); // ユーザー状態を即座にリセット
-    localStorage.clear(); // ローカルストレージをクリア
-    sessionStorage.clear(); // セッションストレージもクリア
-    router.push("/login"); // 🚀 ログインページにリダイレクト
+    setUser(null); 
+    localStorage.clear(); 
+    sessionStorage.clear(); 
+    router.push("/login"); 
   };
 
   if (loading) {

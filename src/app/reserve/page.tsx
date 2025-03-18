@@ -13,14 +13,14 @@ export default function SeatReservation() {
   const [selectedReservation, setSelectedReservation] = useState<{ seatNumber: number; timeSlot: string; reservationCode: string | null; visitorName: string | null } | null>(null);
   const [visitorName, setVisitorName] = useState<string>("");
   const [completedReservation, setCompletedReservation] = useState<{ reservationCode: string; ticketNumber: number } | null>(null);
-  const [isNameInputVisible, setIsNameInputVisible] = useState<boolean>(false); // 名前入力フォームを表示するフラグ
-  const [isCancelMode, setIsCancelMode] = useState<boolean>(false); // キャンセルモード
-  const [isCancelSuccessModalVisible, setIsCancelSuccessModalVisible] = useState<boolean>(false); // キャンセル成功モーダル表示
+  const [isNameInputVisible, setIsNameInputVisible] = useState<boolean>(false); 
+  const [isCancelMode, setIsCancelMode] = useState<boolean>(false); 
+  const [isCancelSuccessModalVisible, setIsCancelSuccessModalVisible] = useState<boolean>(false);
   const [todayDate, setTodayDate] = useState("");
   
   const {seats, setSeats} = useFetchSeats(todayDate);
 
-  // 今日の日付を YYYY-MM-DD 形式で取得
+
   useEffect(() => {
     const today = new Date().toLocaleDateString("ja-JP").split("T")[0]; // YYYY-MM-DD
     console.log("Today's Date:", today);
@@ -39,28 +39,27 @@ export default function SeatReservation() {
     );
 
     if (reservedSeat) {
-      // 予約済みの場合、そのままキャンセルモードに遷移
       setSelectedReservation({
         seatNumber,
         timeSlot,
         reservationCode,
         visitorName: reservedSeat.visitor_name,
       });
-      setIsCancelMode(true); // キャンセルモード
+      setIsCancelMode(true); 
     } else {
-      // 予約されていない場合
+
       setSelectedReservation({
         seatNumber,
         timeSlot,
         reservationCode,
         visitorName: null,
       });
-      setIsCancelMode(false); // キャンセルモードを無効
-      setIsNameInputVisible(true); // 名前入力フォームを表示
+      setIsCancelMode(false);
+      setIsNameInputVisible(true); 
     }
   };
 
-  // 予約確定処理
+
   const handleReserve = async () => {
     if (!selectedReservation) return;
     if (visitorName.trim().length < 1) {
@@ -87,14 +86,14 @@ export default function SeatReservation() {
     }
 
     if (existingReservations.length > 0) {
-      // 予約済みの場合、そのままキャンセルモードに遷移
+
       setSelectedReservation({
         seatNumber,
         timeSlot,
         reservationCode: existingReservations[0].reservation_code,
         visitorName: existingReservations[0].visitor_name,
       });
-      setIsCancelMode(true); // キャンセルモード
+      setIsCancelMode(true); 
       return;
     }
 
@@ -132,20 +131,18 @@ export default function SeatReservation() {
   };
 
 
-  // 戻るボタンの処理
+
   const handleBack = () => {
-    setIsNameInputVisible(false); // 名前入力フォームを非表示にする
-    setVisitorName(""); // 名前をリセット
-    setIsCancelMode(false); // キャンセルモードを無効化
+    setIsNameInputVisible(false); 
+    setVisitorName(""); 
+    setIsCancelMode(false); 
   };
 
   return (
     <AuthProvider requireAuth={true}>
       <div className="p-3 w-full mx-auto">
-        {/* コンポーネント：タイトル、本日の予約、説明 */}
         <ReservePageHeaderSection todayDate={todayDate} />
 
-        {/* コンポーネント：時刻、座席ボタンリスト */}
         <ReservationTable
           seats={seats}
           timeSlots={timeSlots}
@@ -188,7 +185,7 @@ export default function SeatReservation() {
         {isNameInputVisible && !isCancelMode && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
             <div className="w-[40%] bg-white p-8 rounded-lg shadow-xl text-center">
-              {/* 注意事項 */}
+
               <div className="text-left bg-red-100 p-4 rounded-lg border-l-4 border-red-500">
                 <p className="text-red-600 font-bold">
                   ⚠️ 以下の注意事項を読み、同意される方は氏名を入力し「予約する」ボタンを押してください。
@@ -202,7 +199,7 @@ export default function SeatReservation() {
                 </ul>
               </div>
 
-              {/* 名前入力 */}
+
               <h2 className="text-lg font-bold mt-6 mb-3">氏名を入力してください</h2>
               <input
                 type="text"
@@ -212,7 +209,7 @@ export default function SeatReservation() {
                 onChange={(e) => setVisitorName(e.target.value)}
               />
 
-              {/* ボタン */}
+
               <div className="flex justify-between items-center mt-6">
                 <button
                   className={`p-3 w-1/2 rounded-lg font-bold transition-colors ${

@@ -4,7 +4,7 @@ type ReservationTableProps = {
   seats: {
     seat_number: number;
     time_slot: string;
-    visitor_name: string | null; // ← 修正
+    visitor_name: string | null; 
   }[];
   timeSlots: string[];
   handleSelectSeat: (seatNumber: number, timeSlot: string, reservationCode: string) => void;

@@ -12,9 +12,9 @@
 body {
   background-color: #c81322;
   background-image: url('/backpattern.png'); 
-  background-repeat: repeat; /* 繰り返し */
-  background-size: cover; /* 画像のサイズを自動に */
-  background-position: center; /* 繰り返しの基準位置 */
+  background-repeat: repeat;
+  background-size: cover; 
+  background-position: center /* 繰り返しの基準位置 */
 }
 
 

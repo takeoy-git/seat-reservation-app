@@ -77,7 +77,7 @@ export const useReservations = () => {
     }
   };
 
-  // 新しい予約を追加する関数
+ 
   const addNewReservation = async (newReservationData: Partial<Reservation>) => {
     if (!newReservationData.date || !newReservationData.time_slot || newReservationData.seat_number === undefined) {
       alert("日付、時間枠、座席番号は必須です。");
@@ -87,7 +87,7 @@ export const useReservations = () => {
     // 予約がすでに存在するか確認
     const { data: existingReservations, error: fetchError } = await supabase
       .from("reservations")
-      .select("id") // 必要最小限のデータのみ取得
+      .select("id") 
       .eq("date", newReservationData.date)
       .eq("time_slot", newReservationData.time_slot)
       .eq("seat_number", newReservationData.seat_number);
@@ -98,13 +98,12 @@ export const useReservations = () => {
       return;
     }
   
-    // 既存の予約がある場合は予約を防ぐ
     if (existingReservations.length > 0) {
       alert("この座席はすでに予約されています。他の座席を選んでください。");
       return;
     }
   
-    // 予約データの挿入
+
     const { data, error } = await supabase
       .from("reservations")
       .insert([newReservationData]);
