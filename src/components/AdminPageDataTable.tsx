@@ -10,7 +10,7 @@ import {
   CarouselContent,
   CarouselItem,
   CarouselNext,
-  CarouselPrevious
+  CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Dot } from "lucide-react";
 
@@ -41,7 +41,15 @@ const AdminPageDataTable: React.FC<AdminPageDataTableProps> = ({
 }) => {
   const exportMultiSheetExcel = () => {
     const ws1 = XLSX.utils.json_to_sheet([
-      { "予約ID": "id", "予約者名": "visitor_name", "予約枠": "time_slot", "年月日": "date", "曜日": "day_of_week", "座席番号": "seat_number", "作成日時": "created_at" },
+      {
+        予約ID: "id",
+        予約者名: "visitor_name",
+        予約枠: "time_slot",
+        年月日: "date",
+        曜日: "day_of_week",
+        座席番号: "seat_number",
+        作成日時: "created_at",
+      },
       ...reservations.map(({ id, visitor_name, time_slot, date, seat_number, created_at }) => ({
         予約ID: id,
         予約者名: visitor_name,
@@ -49,8 +57,8 @@ const AdminPageDataTable: React.FC<AdminPageDataTableProps> = ({
         年月日: date,
         曜日: new Date(date).toLocaleDateString("ja-JP", { weekday: "long" }),
         座席番号: seat_number === 1 ? "階段側席" : seat_number === 2 ? "受付側席" : seat_number,
-        作成日時: created_at
-      }))
+        作成日時: created_at,
+      })),
     ]);
 
     const ws2 = XLSX.utils.json_to_sheet(timeSlotStats());
@@ -67,8 +75,6 @@ const AdminPageDataTable: React.FC<AdminPageDataTableProps> = ({
   };
 
   const [currentSlide, setCurrentSlide] = useState<number>(0);
-
-
 
   const timeSlotStats = () => {
     const timeCount: { [key: string]: number } = {};
@@ -94,30 +100,34 @@ const AdminPageDataTable: React.FC<AdminPageDataTableProps> = ({
     }));
   };
 
-  const dayOfWeekStats = reservations.reduce((acc, res) => {
-    const day = new Date(res.date).toLocaleDateString("ja-JP", { weekday: "long" });
-    acc[day] = (acc[day] || 0) + 1;
-    return acc;
-  }, {} as { [key: string]: number });
+  const dayOfWeekStats = reservations.reduce(
+    (acc, res) => {
+      const day = new Date(res.date).toLocaleDateString("ja-JP", { weekday: "long" });
+      acc[day] = (acc[day] || 0) + 1;
+      return acc;
+    },
+    {} as { [key: string]: number }
+  );
 
-  const dayOfWeekData = Object.keys(dayOfWeekStats).map(day => ({
+  const dayOfWeekData = Object.keys(dayOfWeekStats).map((day) => ({
     day,
-    count: dayOfWeekStats[day]
+    count: dayOfWeekStats[day],
   }));
 
   const charts = [
-    { title: "時間帯別予約数", data: timeSlotStats(), dataKey: "time", fileName: "time_slots.xlsx" },
+    {
+      title: "時間帯別予約数",
+      data: timeSlotStats(),
+      dataKey: "time",
+      fileName: "time_slots.xlsx",
+    },
     { title: "座席別予約数", data: seatStats(), dataKey: "seat", fileName: "seat_stats.xlsx" },
-    { title: "曜日別予約数", data: dayOfWeekData, dataKey: "day", fileName: "day_of_week.xlsx" }
+    { title: "曜日別予約数", data: dayOfWeekData, dataKey: "day", fileName: "day_of_week.xlsx" },
   ];
 
-
-
-  
   return (
     <div className="p-6 shadow-md rounded-lg overflow-x-auto w-full w-full max-w-6xl mx-auto flex flex-col items-center">
       <div className="p-6 shadow-md rounded-lg w-full max-w-3xl mx-auto flex flex-col items-center">
-
         <table className="w-full border-collapse border border-gray-400 text-xl">
           <thead>
             <tr className="bg-gray-100 border-b border-gray-400">
@@ -138,7 +148,10 @@ const AdminPageDataTable: React.FC<AdminPageDataTableProps> = ({
               <th className="border px-4 py-2">操作</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-300" style={{ maxHeight: "500px", overflowY: "auto" }}>
+          <tbody
+            className="divide-y divide-gray-300"
+            style={{ maxHeight: "500px", overflowY: "auto" }}
+          >
             {reservations.map((res) => (
               <tr key={res.id} className="border hover:bg-gray-50">
                 <td className="border px-4 py-2 bg-white">
@@ -166,24 +179,39 @@ const AdminPageDataTable: React.FC<AdminPageDataTableProps> = ({
                   )}
                 </td>
                 <td className="border px-4 py-2 bg-white">{res.date}</td>
-                <td className="border px-4 py-2 bg-white">{new Date(res.date).toLocaleDateString("ja-JP", { weekday: "short" })}</td>
                 <td className="border px-4 py-2 bg-white">
-                  {res.seat_number === 1 ? "階段側席" : res.seat_number === 2 ? "受付側席" : res.seat_number}
+                  {new Date(res.date).toLocaleDateString("ja-JP", { weekday: "short" })}
+                </td>
+                <td className="border px-4 py-2 bg-white">
+                  {res.seat_number === 1
+                    ? "階段側席"
+                    : res.seat_number === 2
+                      ? "受付側席"
+                      : res.seat_number}
                 </td>
                 <td className="border px-4 py-2 bg-white">
                   <div className="flex gap-2 items-center">
                     {editingId === res.id ? (
-                      <Button onClick={handleSave} className="bg-green-500 text-white px-3 py-1 rounded">
+                      <Button
+                        onClick={handleSave}
+                        className="bg-green-500 text-white px-3 py-1 rounded"
+                      >
                         保存
                       </Button>
                     ) : (
-<Button onClick={() => handleEdit(res.id)} className="bg-blue-500 text-white px-3 py-1 rounded">
-  編集
-</Button>
+                      <Button
+                        onClick={() => handleEdit(res.id)}
+                        className="bg-blue-500 text-white px-3 py-1 rounded"
+                      >
+                        編集
+                      </Button>
                     )}
-<Button onClick={() => handleDelete(res.id)} className="bg-red-500 text-white px-3 py-1 rounded">
-  削除
-</Button>
+                    <Button
+                      onClick={() => handleDelete(res.id)}
+                      className="bg-red-500 text-white px-3 py-1 rounded"
+                    >
+                      削除
+                    </Button>
                   </div>
                 </td>
               </tr>
@@ -211,7 +239,10 @@ const AdminPageDataTable: React.FC<AdminPageDataTableProps> = ({
                     />
                     <YAxis />
                     <Tooltip />
-                    <Bar dataKey="count" fill={index === 0 ? "#82ca9d" : index === 1 ? "#8884d8" : "#ffcc00"} />
+                    <Bar
+                      dataKey="count"
+                      fill={index === 0 ? "#82ca9d" : index === 1 ? "#8884d8" : "#ffcc00"}
+                    />
                   </BarChart>
                 </CarouselItem>
               ))}
@@ -223,19 +254,24 @@ const AdminPageDataTable: React.FC<AdminPageDataTableProps> = ({
 
         <div className="flex justify-center mt-4">
           {charts.map((_, index) => (
-            <Dot key={index} size={60} className={`mx-1 ${currentSlide === index ? "text-rose-500" : "text-gray-400"}`} />
+            <Dot
+              key={index}
+              size={60}
+              className={`mx-1 ${currentSlide === index ? "text-rose-500" : "text-gray-400"}`}
+            />
           ))}
         </div>
 
         <div className="flex justify-center mt-4">
-        <Button onClick={exportMultiSheetExcel} className=" bg-blue-500 text-white px-4 py-2 rounded mb-4">
-          エクセル出力
-        </Button>
+          <Button
+            onClick={exportMultiSheetExcel}
+            className=" bg-blue-500 text-white px-4 py-2 rounded mb-4"
+          >
+            エクセル出力
+          </Button>
         </div>
-
-          </div>
+      </div>
     </div>
-    
   );
 };
 

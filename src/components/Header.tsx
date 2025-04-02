@@ -12,21 +12,21 @@ export default function Header() {
 
   // すべてのページ遷移で簡易のパスワード認証を要求。イタズラ防止目的の認証のためフロントエンドからパスワードが見えるが目的と照らして問題なし
   const handleNavigation = (destination: string) => {
-    setPassword(""); 
-    setError(""); 
-    setPendingDestination(destination); 
-    setIsPasswordModalOpen(true); 
+    setPassword("");
+    setError("");
+    setPendingDestination(destination);
+    setIsPasswordModalOpen(true);
   };
 
   const handlePasswordSubmit = () => {
     if (password === "1234") {
       setIsPasswordModalOpen(false);
       if (pendingDestination) {
-        router.push(pendingDestination); 
+        router.push(pendingDestination);
       }
     } else {
       setError("パスコードが間違っています");
-      setPassword(""); 
+      setPassword("");
     }
   };
 
@@ -38,31 +38,28 @@ export default function Header() {
 
   return (
     <>
-      <header
-        className="fixed top-0 w-full h-[60px] bg-cover bg-center z-50"
-      >
+      <header className="fixed top-0 w-full h-[60px] bg-cover bg-center z-50">
         <div className="flex justify-between items-center bg-opacity-70 bg-black p-1">
-        <div className="flex w-full">
-  <button
-    className="w-1/3 text-gray-700 text-sm px-2 py-1 border-none bg-transparent opacity-20 hover:opacity-100 transition-opacity"
-    onClick={() => handleNavigation("/admin")}
-  >
-    Admin
-  </button>
-  <button
-    className="w-1/3 text-gray-700 text-sm px-2 py-1 border-none bg-transparent opacity-20 hover:opacity-100 transition-opacity"
-    onClick={() => handleNavigation("/reserve")}
-  >
-    Reserve
-  </button>
-  <button
-    className="w-1/3 text-gray-700 text-sm px-2 py-1 border-none bg-transparent opacity-20 hover:opacity-100 transition-opacity"
-    onClick={() => handleNavigation("/maintenance")}
-  >
-    Maintenance
-  </button>
-</div>
-
+          <div className="flex w-full">
+            <button
+              className="w-1/3 text-gray-700 text-sm px-2 py-1 border-none bg-transparent opacity-20 hover:opacity-100 transition-opacity"
+              onClick={() => handleNavigation("/admin")}
+            >
+              Admin
+            </button>
+            <button
+              className="w-1/3 text-gray-700 text-sm px-2 py-1 border-none bg-transparent opacity-20 hover:opacity-100 transition-opacity"
+              onClick={() => handleNavigation("/reserve")}
+            >
+              Reserve
+            </button>
+            <button
+              className="w-1/3 text-gray-700 text-sm px-2 py-1 border-none bg-transparent opacity-20 hover:opacity-100 transition-opacity"
+              onClick={() => handleNavigation("/maintenance")}
+            >
+              Maintenance
+            </button>
+          </div>
         </div>
       </header>
 

@@ -49,10 +49,7 @@ export const useReservations = () => {
       return;
     }
 
-    const { error } = await supabase
-      .from("reservations")
-      .update(editedData)
-      .eq("id", editingId);
+    const { error } = await supabase.from("reservations").update(editedData).eq("id", editingId);
 
     if (error) {
       console.error("更新エラー:", error);
@@ -77,49 +74,48 @@ export const useReservations = () => {
     }
   };
 
- 
   const addNewReservation = async (newReservationData: Partial<Reservation>) => {
-    if (!newReservationData.date || !newReservationData.time_slot || newReservationData.seat_number === undefined) {
+    if (
+      !newReservationData.date ||
+      !newReservationData.time_slot ||
+      newReservationData.seat_number === undefined
+    ) {
       alert("日付、時間枠、座席番号は必須です。");
       return;
     }
-  
+
     // 予約がすでに存在するか確認
     const { data: existingReservations, error: fetchError } = await supabase
       .from("reservations")
-      .select("id") 
+      .select("id")
       .eq("date", newReservationData.date)
       .eq("time_slot", newReservationData.time_slot)
       .eq("seat_number", newReservationData.seat_number);
-  
+
     if (fetchError) {
       console.error("予約の確認中にエラーが発生しました:", fetchError);
       alert("予約の確認に失敗しました");
       return;
     }
-  
+
     if (existingReservations.length > 0) {
       alert("この座席はすでに予約されています。他の座席を選んでください。");
       return;
     }
-  
 
-    const { data, error } = await supabase
-      .from("reservations")
-      .insert([newReservationData]);
-  
+    const { data, error } = await supabase.from("reservations").insert([newReservationData]);
+
     if (error) {
       console.error("新規予約の保存に失敗しました:", error.message);
       alert(`新規予約の保存に失敗しました: ${error.message}`);
       return;
     }
-  
+
     if (data) {
       setReservations((prev) => [...prev, ...data]);
       alert("予約が完了しました！");
     }
   };
-  
 
   // 予約データをソートする関数
   const handleSort = (key: keyof Reservation) => {

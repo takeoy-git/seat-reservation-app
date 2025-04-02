@@ -4,13 +4,17 @@ type ReservationTableProps = {
   seats: {
     seat_number: number;
     time_slot: string;
-    visitor_name: string | null; 
+    visitor_name: string | null;
   }[];
   timeSlots: string[];
   handleSelectSeat: (seatNumber: number, timeSlot: string, reservationCode: string) => void;
 };
 
-const ReservationTable: React.FC<ReservationTableProps> = ({ timeSlots, seats, handleSelectSeat }) => {
+const ReservationTable: React.FC<ReservationTableProps> = ({
+  timeSlots,
+  seats,
+  handleSelectSeat,
+}) => {
   return (
     <div>
       <div className="grid grid-cols-[0.3fr_1fr_1fr] gap-2 pb-3 px-5 items-center">
@@ -23,7 +27,12 @@ const ReservationTable: React.FC<ReservationTableProps> = ({ timeSlots, seats, h
         {/* 1列目：時刻 */}
         <div className="flex flex-col gap-3">
           {timeSlots.map((timeSlot) => (
-            <div key={timeSlot} className="py-2 rounded h-[50px] w-[100px] text-white font-bold text-center text-3xl">{timeSlot}</div>
+            <div
+              key={timeSlot}
+              className="py-2 rounded h-[50px] w-[100px] text-white font-bold text-center text-3xl"
+            >
+              {timeSlot}
+            </div>
           ))}
         </div>
 

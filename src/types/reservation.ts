@@ -24,5 +24,5 @@ export type Reservation = {
   time_slot: string;
   seat_number: number;
   created_at: string;
-  remark?: string; 
+  remark?: string;
 };

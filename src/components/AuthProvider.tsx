@@ -13,7 +13,13 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export function AuthProvider({ children, requireAuth = false }: { children: React.ReactNode; requireAuth?: boolean }) {
+export function AuthProvider({
+  children,
+  requireAuth = false,
+}: {
+  children: React.ReactNode;
+  requireAuth?: boolean;
+}) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -39,7 +45,6 @@ export function AuthProvider({ children, requireAuth = false }: { children: Reac
 
     initializeAuth();
 
-
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
       console.log("認証状態が変化:", session);
       setUser(session?.user ?? null);
@@ -49,7 +54,6 @@ export function AuthProvider({ children, requireAuth = false }: { children: Reac
       authListener?.subscription?.unsubscribe();
     };
   }, []);
-
 
   useEffect(() => {
     if (requireAuth && !loading && user === null) {
@@ -64,10 +68,10 @@ export function AuthProvider({ children, requireAuth = false }: { children: Reac
       return;
     }
 
-    setUser(null); 
-    localStorage.clear(); 
-    sessionStorage.clear(); 
-    router.push("/login"); 
+    setUser(null);
+    localStorage.clear();
+    sessionStorage.clear();
+    router.push("/login");
   };
 
   if (loading) {
