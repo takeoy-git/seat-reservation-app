@@ -50,7 +50,9 @@ export default function CancelReservationButton({
 
     if (reservedSeat.visitor_name === visitorName) {
       console.log("✅ 削除成功:", data);
-      setSeats(seats.filter((seat) => seat.seat_number !== seatNumber || seat.time_slot !== timeSlot));
+      setSeats(
+        seats.filter((seat) => seat.seat_number !== seatNumber || seat.time_slot !== timeSlot)
+      );
       setIsCancelSuccessModalVisible(true);
       setIsCancelMode(false);
     } else {

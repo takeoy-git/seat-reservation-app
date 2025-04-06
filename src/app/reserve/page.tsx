@@ -10,23 +10,30 @@ import ReservationTable from "@/components/ReservationTable";
 import ReservePageHeaderSection from "@/components/ReservePageHeaderSection";
 
 export default function SeatReservation() {
-  const [selectedReservation, setSelectedReservation] = useState<{ seatNumber: number; timeSlot: string; reservationCode: string | null; visitorName: string | null } | null>(null);
+  const [selectedReservation, setSelectedReservation] = useState<{
+    seatNumber: number;
+    timeSlot: string;
+    reservationCode: string | null;
+    visitorName: string | null;
+  } | null>(null);
   const [visitorName, setVisitorName] = useState<string>("");
-  const [completedReservation, setCompletedReservation] = useState<{ reservationCode: string; ticketNumber: number } | null>(null);
-  const [isNameInputVisible, setIsNameInputVisible] = useState<boolean>(false); 
-  const [isCancelMode, setIsCancelMode] = useState<boolean>(false); 
+  const [completedReservation, setCompletedReservation] = useState<{
+    reservationCode: string;
+    ticketNumber: number;
+  } | null>(null);
+  const [isNameInputVisible, setIsNameInputVisible] = useState<boolean>(false);
+  const [isCancelMode, setIsCancelMode] = useState<boolean>(false);
   const [isCancelSuccessModalVisible, setIsCancelSuccessModalVisible] = useState<boolean>(false);
   const [todayDate, setTodayDate] = useState("");
-  
-  const {seats, setSeats} = useFetchSeats(todayDate);
 
+  const { seats, setSeats } = useFetchSeats(todayDate);
 
   useEffect(() => {
     const today = new Date().toLocaleDateString("ja-JP").split("T")[0]; // YYYY-MM-DD
     console.log("Today's Date:", today);
     setTodayDate(today);
   }, []);
- 
+
   const getTicketNumber = (timeSlot: string, seatNumber: number) => {
     const timeIndex = timeSlots.indexOf(timeSlot);
     return timeIndex * 2 + seatNumber;
@@ -45,9 +52,8 @@ export default function SeatReservation() {
         reservationCode,
         visitorName: reservedSeat.visitor_name,
       });
-      setIsCancelMode(true); 
+      setIsCancelMode(true);
     } else {
-
       setSelectedReservation({
         seatNumber,
         timeSlot,
@@ -55,10 +61,9 @@ export default function SeatReservation() {
         visitorName: null,
       });
       setIsCancelMode(false);
-      setIsNameInputVisible(true); 
+      setIsNameInputVisible(true);
     }
   };
-
 
   const handleReserve = async () => {
     if (!selectedReservation) return;
@@ -74,7 +79,7 @@ export default function SeatReservation() {
     const { data: existingReservations, error } = await supabase
       .from("reservations")
       .select("reservation_code, seat_number, time_slot, visitor_name")
-      .eq("time_slot", timeSlot) 
+      .eq("time_slot", timeSlot)
       .eq("seat_number", seatNumber)
       .eq("date", today)
       .limit(1);
@@ -86,14 +91,13 @@ export default function SeatReservation() {
     }
 
     if (existingReservations.length > 0) {
-
       setSelectedReservation({
         seatNumber,
         timeSlot,
         reservationCode: existingReservations[0].reservation_code,
         visitorName: existingReservations[0].visitor_name,
       });
-      setIsCancelMode(true); 
+      setIsCancelMode(true);
       return;
     }
 
@@ -122,7 +126,15 @@ export default function SeatReservation() {
 
     setSeats((prevSeats) => {
       if (!prevSeats.find((s) => s.seat_number === seatNumber && s.time_slot === timeSlot)) {
-        return [...prevSeats, { seat_number: seatNumber, reservation_code: reservationCode, visitor_name: visitorName, time_slot: timeSlot }];
+        return [
+          ...prevSeats,
+          {
+            seat_number: seatNumber,
+            reservation_code: reservationCode,
+            visitor_name: visitorName,
+            time_slot: timeSlot,
+          },
+        ];
       }
       return prevSeats;
     });
@@ -130,12 +142,10 @@ export default function SeatReservation() {
     setIsNameInputVisible(false);
   };
 
-
-
   const handleBack = () => {
-    setIsNameInputVisible(false); 
-    setVisitorName(""); 
-    setIsCancelMode(false); 
+    setIsNameInputVisible(false);
+    setVisitorName("");
+    setIsCancelMode(false);
   };
 
   return (
@@ -143,20 +153,20 @@ export default function SeatReservation() {
       <div className="p-3 w-full mx-auto">
         <ReservePageHeaderSection todayDate={todayDate} />
 
-        <ReservationTable
-          seats={seats}
-          timeSlots={timeSlots}
-          handleSelectSeat={handleSelectSeat}
-        />
+        <ReservationTable seats={seats} timeSlots={timeSlots} handleSelectSeat={handleSelectSeat} />
 
         {/* 予約完了ウィンドウ */}
         {completedReservation && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
             <div className="bg-white p-6 rounded shadow-lg text-center">
               <h2 className="text-lg font-bold text-green-600">予約完了！</h2>
-              <p className="text-xl font-bold mt-2">予約番号: {completedReservation.reservationCode}</p>
-              <p className="mt-2 text-red-600 font-bold">番号札をお取りください: {completedReservation.ticketNumber}</p>
-              <button 
+              <p className="text-xl font-bold mt-2">
+                予約番号: {completedReservation.reservationCode}
+              </p>
+              <p className="mt-2 text-red-600 font-bold">
+                番号札をお取りください: {completedReservation.ticketNumber}
+              </p>
+              <button
                 className="mt-4 bg-blue-500 text-white p-2 rounded w-full"
                 onClick={() => setCompletedReservation(null)}
               >
@@ -171,7 +181,7 @@ export default function SeatReservation() {
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
             <div className="bg-white p-6 rounded shadow-lg text-center">
               <h2 className="text-lg font-bold text-green-600">予約がキャンセルされました。</h2>
-              <button 
+              <button
                 className="mt-4 bg-blue-500 text-white p-2 rounded w-full"
                 onClick={() => setIsCancelSuccessModalVisible(false)}
               >
@@ -185,20 +195,32 @@ export default function SeatReservation() {
         {isNameInputVisible && !isCancelMode && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
             <div className="w-[40%] bg-white p-8 rounded-lg shadow-xl text-center">
-
               <div className="text-left bg-red-100 p-4 rounded-lg border-l-4 border-red-500">
                 <p className="text-red-600 font-bold">
-                  ⚠️ 以下の注意事項を読み、同意される方は氏名を入力し「予約する」ボタンを押してください。
+                  ⚠️
+                  以下の注意事項を読み、同意される方は氏名を入力し「予約する」ボタンを押してください。
                 </p>
                 <ul className="text-sm text-gray-800 mt-2 space-y-1">
-                  <li><strong>・妊娠中の方</strong>、またはその可能性のある方は利用できません</li>
-                  <li><strong>・高血圧や心臓疾患のある方</strong>は利用できません</li>
-                  <li><strong>・頭、首、背中、足等に怪我</strong>のある方、または不自由な方は利用できません</li>
-                  <li><strong>・乗り物酔いしやすい方</strong>、飲酒・薬物の影響下にある方は利用できません</li>
-                  <li><strong>・香りや煙、光などの刺激に弱い方</strong>、アレルギーのある方は利用できません</li>
+                  <li>
+                    <strong>・妊娠中の方</strong>、またはその可能性のある方は利用できません
+                  </li>
+                  <li>
+                    <strong>・高血圧や心臓疾患のある方</strong>は利用できません
+                  </li>
+                  <li>
+                    <strong>・頭、首、背中、足等に怪我</strong>
+                    のある方、または不自由な方は利用できません
+                  </li>
+                  <li>
+                    <strong>・乗り物酔いしやすい方</strong>
+                    、飲酒・薬物の影響下にある方は利用できません
+                  </li>
+                  <li>
+                    <strong>・香りや煙、光などの刺激に弱い方</strong>
+                    、アレルギーのある方は利用できません
+                  </li>
                 </ul>
               </div>
-
 
               <h2 className="text-lg font-bold mt-6 mb-3">氏名を入力してください</h2>
               <input
@@ -209,12 +231,11 @@ export default function SeatReservation() {
                 onChange={(e) => setVisitorName(e.target.value)}
               />
 
-
               <div className="flex justify-between items-center mt-6">
                 <button
                   className={`p-3 w-1/2 rounded-lg font-bold transition-colors ${
-                    visitorName.trim().length < 1 
-                      ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
+                    visitorName.trim().length < 1
+                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                       : "bg-blue-500 text-white hover:bg-blue-600"
                   }`}
                   onClick={handleReserve}
@@ -236,8 +257,14 @@ export default function SeatReservation() {
         {/* キャンセルモード */}
         {isCancelMode && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="w-[40%] bg-white p-6 rounded shadow-lg text-center"> {/* モーダルの横幅を50%に設定 */}
-              <h2 className="text-lg font-bold mb-2">予約をキャンセルしますか？<br />予約時の名前を入力してください</h2>
+            <div className="w-[40%] bg-white p-6 rounded shadow-lg text-center">
+              {" "}
+              {/* モーダルの横幅を50%に設定 */}
+              <h2 className="text-lg font-bold mb-2">
+                予約をキャンセルしますか？
+                <br />
+                予約時の名前を入力してください
+              </h2>
               <input
                 type="text"
                 className="border p-2 w-full mt-2"
@@ -249,7 +276,7 @@ export default function SeatReservation() {
                 {selectedReservation && (
                   <CancelReservationButton
                     visitorName={visitorName}
-                    seatNumber={selectedReservation.seatNumber} 
+                    seatNumber={selectedReservation.seatNumber}
                     timeSlot={selectedReservation.timeSlot}
                     todayDate={todayDate}
                     seats={seats}

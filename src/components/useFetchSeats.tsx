@@ -8,17 +8,17 @@ export const useFetchSeats = (todayDate: string | null) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!todayDate) return; 
+    if (!todayDate) return;
     const fetchSeats = async () => {
-      setLoading(true); 
-      setError(null);   
+      setLoading(true);
+      setError(null);
 
       const { data, error } = await supabase
         .from("reservations")
         .select("seat_number, reservation_code, visitor_name, time_slot")
         .eq("date", todayDate);
 
-      setLoading(false); 
+      setLoading(false);
 
       if (error) {
         console.error("予約データの取得に失敗:", error);
@@ -28,7 +28,7 @@ export const useFetchSeats = (todayDate: string | null) => {
 
       if (!data || data.length === 0) {
         console.log("本日の予約はありません。");
-        setSeats([]); 
+        setSeats([]);
         return;
       }
 

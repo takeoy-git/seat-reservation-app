@@ -12,7 +12,7 @@ export default function Login() {
 
   const handleLogin = async () => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  
+
     if (error) {
       alert(error.message);
       return;
@@ -23,24 +23,21 @@ export default function Login() {
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
-    
+
     if (error) {
       alert(error.message);
       return;
     }
-  
 
     router.refresh();
     router.push("/login");
   };
 
-  const handleKeyDown = (e: { key: string; }) => {
+  const handleKeyDown = (e: { key: string }) => {
     if (e.key === "Enter") {
       handleLogin();
     }
   };
-
-
 
   useEffect(() => {
     const refreshSession = async () => {
@@ -64,9 +61,6 @@ export default function Login() {
 
     refreshSession();
   }, []);
-
-
-
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6">

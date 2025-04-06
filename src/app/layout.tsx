@@ -15,11 +15,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ja">
       <body className="min-h-screen flex flex-col pt-12 pb-16">
-      <Header />
+        <Header />
         <AuthProvider>{children}</AuthProvider>
-      <Footer />
+        <Footer />
       </body>
     </html>
   );
 }
-
