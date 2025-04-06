@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+import Link from "next/link";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -91,6 +92,10 @@ export default function Login() {
         <button onClick={handleLogin} className="bg-rose-500 text-white px-6 py-3 rounded-md shadow-md hover:bg-rose-600 transition">
           ログイン
         </button>
+        アカウントをお持ちでない方は
+            <Link href="/signup" className="text-rose-500 hover:underline ml-1">
+              新規登録
+            </Link>
         <button onClick={handleLogout} className="bg-gray-500 text-white px-6 py-3 rounded-md shadow-md hover:bg-gray-600 transition">
           ログアウト
         </button>
@@ -98,4 +103,5 @@ export default function Login() {
       </div>
     </div>
   );
+  
 }
